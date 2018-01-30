@@ -34,12 +34,13 @@ bool NdtCell::build()
     return this->isBuilt;
 }
 
-double NdtCell::normalDistribution(Vector2d point)
+double NdtCell::normalDistribution(Vector2d point, unsigned short iter)
 {
     if (this->isBuilt) {
         Vector2d diff = point - this->mean;
+        this->_calc_covar_inverse(iter);
         //        std::cout << ((pt_diff.transpose() * this->_inv_covar) * pt_diff) / 2. << std::endl;
-        return exp(-static_cast<double>((((diff.transpose() * this->_inv_covar) * diff))) / 2.);
+        return (iter / 100.) * exp(-static_cast<double>((((diff.transpose() * this->_inv_covar) * diff))) / 2.);
     } else {
         return 0;
     }
@@ -71,7 +72,7 @@ void NdtCell::_calc_covar()
     }
 }
 
-void NdtCell::_calc_covar_inverse()
+void NdtCell::_calc_covar_inverse(unsigned int iter)
 {
     EigenSolver<Matrix2d> eigenval_solver(this->_covar);
     Vector2d eigenvals = eigenval_solver.pseudoEigenvalueMatrix().diagonal();
@@ -80,8 +81,8 @@ void NdtCell::_calc_covar_inverse()
     large_val = eigenvals[eigenvals[0] > eigenvals[1] ? 0 : 1];
     small_val = eigenvals[eigenvals[0] < eigenvals[1] ? 0 : 1];
 
-    if (small_val < .001 * large_val)
-        large_val = .001 * large_val * large_val; // From now, the large_val hold the new determinant
+    if (small_val < (100. / iter) * .001 * large_val)
+        large_val = (100. / iter) * .001 * large_val * large_val; // From now, the large_val hold the new determinant
     else
         large_val = this->_covar.determinant();
 

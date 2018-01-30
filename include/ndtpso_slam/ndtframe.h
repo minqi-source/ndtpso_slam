@@ -30,6 +30,6 @@ public:
     void saveImage(const char* const filename, unsigned char density = 50);
 };
 
-extern double cost_function(Vector3d trans, NdtFrame* const ref_frame, NdtFrame* const new_frame);
+double cost_function(Vector3d trans, NdtFrame* const ref_frame, NdtFrame* const new_frame, unsigned short iter = 100);
 
 #endif // NDTFRAME_H

@@ -12,7 +12,7 @@ private:
     Matrix2d _covar, _inv_covar;
     inline void _calc_mean();
     inline void _calc_covar();
-    inline void _calc_covar_inverse();
+    inline void _calc_covar_inverse(unsigned int iter = 100);
 
 public:
     //    vector<double> origin;
@@ -24,7 +24,7 @@ public:
     bool isBuilt;
     bool created;
     bool build();
-    double normalDistribution(Vector2d point);
+    double normalDistribution(Vector2d point, unsigned short iter = 100);
 };
 
 #endif // NDTCELL_H

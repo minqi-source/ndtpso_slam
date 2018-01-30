@@ -14,9 +14,9 @@ using std::cout;
 using std::endl;
 
 static std::mutex matcher_mutex;
-static NdtFrame ref_frame(Vector3d::Zero(), 20, 20, 1.5);
-static NdtFrame global_map(Vector3d::Zero(), 200, 200, 1.5);
-static NdtFrame current_frame(Vector3d::Zero(), 20, 20, 1.5);
+static NdtFrame ref_frame(Vector3d::Zero(), 20, 20, 1.);
+static NdtFrame global_map(Vector3d::Zero(), 50, 50, 1.);
+static NdtFrame current_frame(Vector3d::Zero(), 20, 20, 1.);
 static Vector3d global_trans, previous_trans, trans_estimate;
 static unsigned int iter_num;
 static geometry_msgs::PoseStamped current_pose;
@@ -36,6 +36,7 @@ void scan_mathcher(const sensor_msgs::LaserScan::ConstPtr& scan)
 
     auto start = std::chrono::high_resolution_clock::now();
 
+    static NdtFrame current_frame(Vector3d::Zero(), 20, 20, 2.);
     current_frame.loadLaser(scan->ranges, scan->angle_min, scan->angle_max);
 
     ref_frame.build();
@@ -67,7 +68,7 @@ void scan_mathcher(const sensor_msgs::LaserScan::ConstPtr& scan)
     std::cout << endl
               << "Elapsed time: " << elapsed.count() << " s\n";
 
-    current_frame = NdtFrame(Vector3d::Zero(), 40, 40, 1.);
+    current_frame = NdtFrame(Vector3d::Zero(), 20, 20, 1.);
     //    loop_rate.sleep();
     //    }
     matcher_mutex.unlock();
@@ -92,5 +93,5 @@ int main(int argc, char** argv)
         loop_rate.sleep();
     }
 
-    global_map.print();
+    global_map.saveImage("global-map");
 }

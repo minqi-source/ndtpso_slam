@@ -139,7 +139,7 @@ int NdtFrame::getCellIndex(Vector2d point)
 
 // TODO: Test the cost function, (why it doesn't give the same value as the
 // python implementation?!)
-double cost_function(Vector3d trans, NdtFrame* const ref_frame, NdtFrame* const new_frame)
+double cost_function(Vector3d trans, NdtFrame* const ref_frame, NdtFrame* const new_frame, unsigned short iter)
 {
     if (!ref_frame->built)
         ref_frame->build();
@@ -153,7 +153,7 @@ double cost_function(Vector3d trans, NdtFrame* const ref_frame, NdtFrame* const 
 
             if ((index_in_ref_frame != -1) && ref_frame->cells[static_cast<unsigned int>(index_in_ref_frame)].isBuilt) {
                 double point_probability = ref_frame->cells[static_cast<unsigned int>(index_in_ref_frame)]
-                                               .normalDistribution(point);
+                                               .normalDistribution(point, iter);
                 assert(1. >= point_probability || point_probability >= 0.);
                 trans_cost -= static_cast<double>(point_probability);
             }
@@ -171,12 +171,10 @@ Vector3d NdtFrame::align(Vector3d initial_guess, NdtFrame* const new_frame)
 void NdtFrame::saveImage(const char* const filename, unsigned char density)
 {
     unsigned int size_x = this->width * density, // density in "pixel per meter"
-        size_y = this->height * density,
-                 size_z = 1,
-                 numberOfColorChannels = 3;
-    unsigned char initialValue = 0;
+        size_y = this->height * density;
 
-    CImg<unsigned char> image(size_x, size_y, size_z, numberOfColorChannels, initialValue);
+    CImg<unsigned char> image(size_x, size_y, 1 /*size z*/,
+        3 /*number of color channels*/, 0 /*initial value*/);
 
     for (unsigned int i = 0; i < this->numOfCells; ++i) {
         for (unsigned int j = 0; j < this->cells[i].points.size(); ++j) {
