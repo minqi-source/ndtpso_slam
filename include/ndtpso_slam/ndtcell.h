@@ -2,6 +2,7 @@
 #define NDTCELL_H
 
 #include "config.h"
+#include "ndtpso_slam/window_adder.h"
 #include <eigen3/Eigen/Core>
 #include <vector>
 
@@ -20,10 +21,14 @@ using std::vector;
 
 class NDTCell {
 private:
-    Vector2d s_partial_sums[NDT_WINDOW_SIZE], s_current_partial_sum, s_global_sum;
-    Matrix2d s_partial_covars[NDT_WINDOW_SIZE], s_global_covar_sum, s_inv_covar;
-    int s_partial_counts[NDT_WINDOW_SIZE], s_current_count{ 0 }, s_global_count{ 0 };
-    size_t s_current_window_id{ 0 };
+    Vector2d s_current_partial_sum;
+    Matrix2d s_inv_covar;
+    int s_current_count{ 0 };
+    //size_t s_current_window_id{ 0 };
+    WindowAdder<int> s_count{ WindowAdder<int>(NDT_WINDOW_SIZE, 0) };
+    WindowAdder<Vector2d> s_points_sum{ WindowAdder<Vector2d>(NDT_WINDOW_SIZE, Vector2d::Zero()) };
+    WindowAdder<Matrix2d> s_covars_sum{ WindowAdder<Matrix2d>(NDT_WINDOW_SIZE, Matrix2d::Zero()) };
+
     inline void s_calc_covar_inverse();
 
 public:

@@ -17,8 +17,8 @@
 #endif
 
 // PSO parameters
-#define PSO_ITERATIONS 45
-#define PSO_POPULATION_SIZE 25
+#define PSO_ITERATIONS 60
+#define PSO_POPULATION_SIZE 35
 #define PSO_W_DUMPING_COEF 1.
 #define PSO_W .8
 #define PSO_C1 2.
@@ -27,6 +27,7 @@
 struct PSOConfig {
     unsigned int iterations{ PSO_ITERATIONS };
     unsigned int populationSize{ PSO_POPULATION_SIZE };
+    int num_threads{ -1 };
     struct {
         double w{ PSO_W };
         double c1{ PSO_C1 };
